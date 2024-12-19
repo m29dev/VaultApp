@@ -17,6 +17,34 @@ const CurrencyExchangePage = () => {
 
     const handleExchange = async () => {
         try {
+            setMessage('')
+
+            console.log(
+                'On Currency Exchange: ',
+                currentCurrency,
+                newCurrency,
+                amount
+            )
+
+            let currentCurrencyInfo = {}
+            const wallet = userCurrencies
+            wallet.map((item) => {
+                if (item?.code === currentCurrency) {
+                    console.log(
+                        'CURRENT CURRENCY IS: ',
+                        item?.code,
+                        item?.amount
+                    )
+                    currentCurrencyInfo = item
+                }
+            })
+
+            if (currentCurrencyInfo?.amount < amount) {
+                return setMessage(
+                    'Amount must not be larger than amount in wallet'
+                )
+            }
+
             const data = await postCurrencyExchange(
                 currentCurrency,
                 newCurrency,
@@ -25,9 +53,7 @@ const CurrencyExchangePage = () => {
 
             console.log(31, data)
 
-            setResult(
-                `You received: ${data.newCurrency.amount} ${data.newCurrency.currency}`
-            )
+            setResult(`You received: ${data.amount} ${data.code}`)
         } catch (error) {
             console.error('Error:', error)
             setMessage('Exchange failed')
