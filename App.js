@@ -6,6 +6,7 @@ import AuthPage from './pages/AuthPage'
 import UserPage from './pages/UserPage'
 import CurrencyExchangePage from './pages/CurrencyExchangePage'
 import WalletPage from './pages/WalletPage'
+import CurrenciesPage from './pages/CurrenciesPage'
 
 const Stack = createStackNavigator()
 
@@ -21,6 +22,7 @@ export default function App() {
                     component={CurrencyExchangePage}
                 />
                 <Stack.Screen name="Wallet" component={WalletPage} />
+                <Stack.Screen name="Currencies" component={CurrenciesPage} />
             </Stack.Navigator>
         </NavigationContainer>
     )

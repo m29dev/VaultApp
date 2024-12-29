@@ -70,7 +70,7 @@ const WalletPage = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>My Wallet</Text>
+                <Text style={styles.headerTitle}>Portfel</Text>
             </View>
 
             {/* Add Money Section */}

@@ -59,6 +59,21 @@ export const getCurrency = async () => {
     return await response.json()
 }
 
+export const getCurrencyDate = async (date) => {
+    const response = await fetch(`${API_BASE_URL}/api/currency/get/${date}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+}
+
 export const postCurrencyExchange = async (
     currentCurrency,
     newCurrency,

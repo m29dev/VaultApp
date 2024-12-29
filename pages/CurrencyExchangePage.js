@@ -172,7 +172,7 @@ const CurrencyExchangePage = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Currency Exchange</Text>
+                <Text style={styles.headerTitle}>Wymiana Walut</Text>
             </View>
 
             {/* Current Currency Selector */}

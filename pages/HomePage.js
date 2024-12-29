@@ -58,6 +58,15 @@ const HomePage = ({ navigation }) => {
                     <Text style={styles.buttonText}>Currency Exchange</Text>
                 </TouchableOpacity>
             )}
+
+            {user && (
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('Currencies')}
+                >
+                    <Text style={styles.buttonText}>Currencies</Text>
+                </TouchableOpacity>
+            )}
         </View>
     )
 }
