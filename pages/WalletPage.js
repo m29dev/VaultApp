@@ -12,11 +12,12 @@ import {
     getWallet,
     postAddMoney,
 } from '../config/vaultServerApi'
+import { FlatList } from 'react-native-web'
 
 const WalletPage = () => {
     const [wallet, setWallet] = useState([])
     const [transactions, setTransactions] = useState([])
-    const [amount, setAmount] = useState(null)
+    const [amount, setAmount] = useState('')
 
     const handleAddMoney = async () => {
         try {
@@ -52,6 +53,18 @@ const WalletPage = () => {
         onInit()
     }, [])
 
+    const renderItem = ({ item }) => (
+        <View style={styles.historyBox}>
+            <Text style={styles.historyItem}>
+                {'Exchanged '}
+                {item?.currentCurrency?.amount} {item?.currentCurrency?.code}
+                {' for '}
+                {item?.newCurrency?.amount} {item?.newCurrency?.code}
+            </Text>
+            <Text style={styles.historyItem}>{item?.date?.slice(0, 10)}</Text>
+        </View>
+    )
+
     return (
         <View style={styles.container}>
             {/* Header */}
@@ -85,8 +98,8 @@ const WalletPage = () => {
                     <ScrollView style={styles.scrollView}>
                         {wallet.map((item, index) => (
                             <View key={index} style={styles.item}>
-                                <Text>
-                                    {item?.code}: {item?.amount}
+                                <Text style={styles.historyItem}>
+                                    {item?.code}: {item?.amount.toFixed(1)}
                                 </Text>
                             </View>
                         ))}
@@ -99,18 +112,15 @@ const WalletPage = () => {
             {/* Transaction History */}
             <View style={styles.historySection}>
                 <Text style={styles.sectionTitle}>Transaction History</Text>
-                <ScrollView style={styles.historyList}>
-                    <Text style={styles.historyItem}>
-                        Added $500 - 12/15/2024
-                    </Text>
-                    <Text style={styles.historyItem}>
-                        Converted $100 to €92.34 - 12/14/2024
-                    </Text>
-                    <Text style={styles.historyItem}>
-                        Sent ¥10,000 - 12/13/2024
-                    </Text>
-                    {/* Add more transactions dynamically */}
-                </ScrollView>
+
+                {transactions.length > 0 && (
+                    <FlatList
+                        data={transactions}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={styles.historyList}
+                    />
+                )}
             </View>
         </View>
     )
@@ -121,6 +131,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
         padding: 16,
+        overflow: 'hidden', // Ensure content respects boundaries
+        maxHeight: 'calc(100vh - 64px)',
     },
     header: {
         padding: 16,
@@ -171,6 +183,9 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         marginBottom: 16,
+        maxHeight:
+            'calc((100vh - 64px - 64px - 103px - 16px - 16px - 16px - 16px) / 2)',
+        overflow: 'hidden', // Ensure content respects boundaries
     },
     currenciesList: {
         marginTop: 8,
@@ -183,6 +198,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         padding: 16,
+        flex: 1,
+
+        // maxHeight: 1000, // Limit the height to 300px
+        maxHeight:
+            'calc((100vh - 64px - 64px - 103px - 16px - 16px - 16px - 16px) / 2)',
+        overflow: 'hidden', // Ensure content respects boundaries
     },
     historyList: {
         marginTop: 8,
@@ -191,6 +212,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         paddingVertical: 4,
         color: '#555',
+        marginRight: 10,
+    },
+    historyBox: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
 })
 
