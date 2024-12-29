@@ -59,7 +59,8 @@ const WalletPage = () => {
                 {'Exchanged '}
                 {item?.currentCurrency?.amount} {item?.currentCurrency?.code}
                 {' for '}
-                {item?.newCurrency?.amount} {item?.newCurrency?.code}
+                {item?.newCurrency?.amount?.toFixed(2)}{' '}
+                {item?.newCurrency?.code}
             </Text>
             <Text style={styles.historyItem}>{item?.date?.slice(0, 10)}</Text>
         </View>

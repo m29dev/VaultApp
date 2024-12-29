@@ -15,13 +15,49 @@ import {
 } from '../config/vaultServerApi'
 
 const CurrencyExchangePage = () => {
+    const [plnExchange, setPlnExchange] = useState(true)
+
     const [userCurrencies, setUserCurrencies] = useState([])
 
     const [currentCurrency, setCurrentCurrency] = useState('PLN')
     const [newCurrency, setNewCurrency] = useState('EUR')
+    const [currentAsk, setCurrentAsk] = useState('')
+    const [currentBid, setCurrentBid] = useState('')
+
     const [amount, setAmount] = useState('')
+    const [amountReceive, setAmountReceive] = useState('')
+
     const [result, setResult] = useState('')
     const [message, setMessage] = useState('')
+
+    useEffect(() => {
+        console.log('new amout: ', amount)
+        const currency = newCurrency.slice(0, 3)
+        let ask = 0
+        let bid = 0
+        rates.map((item) => {
+            if (item.code === currency) {
+                ask = item.ask
+                bid = item.bid
+                return
+            }
+        })
+
+        console.log('ASK: ', ask)
+        console.log('BID: ', bid)
+        setCurrentAsk(ask)
+        setCurrentBid(bid)
+
+        if (plnExchange) {
+            const newAmount = (amount / ask).toFixed(2)
+            setAmountReceive(newAmount)
+        }
+
+        if (!plnExchange) {
+            const newAmount = (amount * bid).toFixed(2)
+            setAmountReceive(newAmount)
+        }
+    }, [amount, newCurrency, plnExchange])
 
     const handleInputChange = (text) => {
         // Allow only numbers (optional additional validation)
@@ -31,15 +67,6 @@ const CurrencyExchangePage = () => {
 
     const handleExchange = async () => {
         try {
-            setMessage('')
-
-            console.log(
-                'On Currency Exchange: ',
-                currentCurrency,
-                newCurrency,
-                amount
-            )
-
             let currentCurrencyInfo = {}
             const wallet = userCurrencies
             wallet.map((item) => {
@@ -53,20 +80,45 @@ const CurrencyExchangePage = () => {
                 }
             })
 
-            if (amount <= 0) return setMessage('Amount must be at least 1 PLN')
-            if (amount > 1000000)
-                return setMessage('Amount must be at most 999 999 PLN')
+            if (amount <= 0) return setMessage('Amount must be > 1')
+            if (amount >= 1000000)
+                return setMessage('Amount must be < 1 000 000')
 
             if (currentCurrencyInfo?.amount < amount)
-                return setMessage(
-                    'Amount must not be larger than amount in wallet'
+                return setMessage('Amount must be <= amount in wallet')
+
+            setMessage('')
+            let data
+
+            if (plnExchange) {
+                console.log(
+                    'On Currency Exchange: ',
+                    currentCurrency,
+                    newCurrency,
+                    amount
                 )
 
-            const data = await postCurrencyExchange(
-                currentCurrency,
-                newCurrency,
-                amount
-            )
+                data = await postCurrencyExchange(
+                    currentCurrency,
+                    newCurrency,
+                    amount
+                )
+            }
+
+            if (!plnExchange) {
+                console.log(
+                    'On Currency Exchange: ',
+                    newCurrency,
+                    currentCurrency,
+                    amount
+                )
+
+                data = await postCurrencyExchange(
+                    newCurrency,
+                    currentCurrency,
+                    amount
+                )
+            }
 
             console.log(31, data)
 
@@ -96,6 +148,22 @@ const CurrencyExchangePage = () => {
             const data = res?.[0]?.rates
             setRates(data)
             console.log(data)
+
+            const currency = newCurrency.slice(0, 3)
+            let ask = 0
+            let bid = 0
+            data.map((item) => {
+                if (item.code === currency) {
+                    ask = item.ask
+                    bid = item.bid
+                    return
+                }
+            })
+
+            console.log('ASK: ', ask)
+            console.log('BID: ', bid)
+            setCurrentAsk(ask)
+            setCurrentBid(bid)
         }
         fetchCurrency()
     }, [])
@@ -109,59 +177,146 @@ const CurrencyExchangePage = () => {
 
             {/* Current Currency Selector */}
             <View style={styles.addMoneySection}>
-                <Text style={styles.sectionTitle}>Select Current Currency</Text>
+                <Text style={styles.sectionTitle}>Wymieniam</Text>
 
-                <Picker
-                    selectedValue={currentCurrency}
-                    onValueChange={(itemValue) => setCurrentCurrency(itemValue)}
-                    style={styles.picker}
-                >
-                    {userCurrencies.map((currency) => (
-                        <Picker.Item
-                            key={currency.code}
-                            label={`${currency.currency} ${currency.code} (${currency.amount})`}
-                            value={currency.code}
+                {plnExchange && (
+                    <View style={styles.selectCurrencyBox}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="..."
+                            keyboardType="numeric"
+                            value={amount}
+                            maxLength={7}
+                            onChangeText={handleInputChange}
                         />
-                    ))}
-                </Picker>
+
+                        <Picker
+                            selectedValue={currentCurrency}
+                            onValueChange={(itemValue) =>
+                                setCurrentCurrency(itemValue)
+                            }
+                            style={styles.picker}
+                        >
+                            <Picker.Item
+                                key={1}
+                                label={`PLN (zloty)`}
+                                value={`PLN`}
+                            />
+                        </Picker>
+                    </View>
+                )}
+                {!plnExchange && (
+                    <View style={styles.selectCurrencyBox}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="..."
+                            keyboardType="numeric"
+                            value={amount}
+                            maxLength={7}
+                            onChangeText={handleInputChange}
+                        />
+
+                        <Picker
+                            selectedValue={newCurrency}
+                            onValueChange={(itemValue) =>
+                                setNewCurrency(itemValue)
+                            }
+                            style={styles.picker}
+                        >
+                            {rates.map((currency) => (
+                                <Picker.Item
+                                    key={currency.code}
+                                    label={`${currency.code} (${currency.currency})`}
+                                    value={currency.code}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                )}
+
+                <View>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => {
+                            setPlnExchange(!plnExchange)
+                        }}
+                    >
+                        <Text style={styles.addButtonText}>odwroc</Text>
+                    </TouchableOpacity>
+                </View>
 
                 {/* New Currency Selector */}
-                <Text style={styles.sectionTitle}>Select New Currency</Text>
+                <Text style={styles.sectionTitle}>Otrzymam</Text>
 
-                <Picker
-                    selectedValue={newCurrency}
-                    onValueChange={(itemValue) => setNewCurrency(itemValue)}
-                    style={styles.picker}
-                >
-                    {rates
-                        .filter((currency) => currency.code !== currentCurrency)
-                        .map((currency) => (
+                {plnExchange && (
+                    <View style={styles.selectCurrencyBox}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="..."
+                            keyboardType="numeric"
+                            value={amountReceive}
+                            maxLength={7}
+                        />
+
+                        <Picker
+                            selectedValue={newCurrency}
+                            onValueChange={(itemValue) =>
+                                setNewCurrency(itemValue)
+                            }
+                            style={styles.picker}
+                        >
+                            {rates
+                                .filter(
+                                    (currency) =>
+                                        currency.code !== currentCurrency
+                                )
+                                .map((currency) => (
+                                    <Picker.Item
+                                        key={currency.code}
+                                        label={`${currency.code} (${currency.currency})`}
+                                        value={currency.code}
+                                    />
+                                ))}
+                        </Picker>
+                    </View>
+                )}
+                {!plnExchange && (
+                    <View style={styles.selectCurrencyBox}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="..."
+                            keyboardType="numeric"
+                            value={amountReceive}
+                            maxLength={7}
+                        />
+
+                        <Picker
+                            selectedValue={currentCurrency}
+                            onValueChange={(itemValue) =>
+                                setCurrentCurrency(itemValue)
+                            }
+                            style={styles.picker}
+                        >
                             <Picker.Item
-                                key={currency.code}
-                                label={`${currency.currency} (${currency.code})`}
-                                value={currency.code}
+                                key={1}
+                                label={`PLN (zloty)`}
+                                value={`PLN`}
                             />
-                        ))}
-                </Picker>
+                        </Picker>
+                    </View>
+                )}
 
-                {/* Amount Input */}
-                <Text style={styles.sectionTitle}>Amount to exchange</Text>
+                {/* buys */}
+                {plnExchange && <Text>Aktualny kurs: {currentAsk}</Text>}
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="between 1 and 999999"
-                    keyboardType="numeric"
-                    value={amount}
-                    onChangeText={handleInputChange}
-                />
+                {/* sells */}
+                {!plnExchange && <Text>Aktualny kurs: {currentBid}</Text>}
 
-                {/* Exchange Button */}
-                {/* <Button title="Exchange" onPress={handleExchange} /> */}
                 <TouchableOpacity
                     style={styles.addButton}
                     onPress={handleExchange}
                 >
-                    <Text style={styles.addButtonText}>Exchange</Text>
+                    <Text style={styles.addButtonText}>Wymien</Text>
                 </TouchableOpacity>
 
                 {/* Result Message */}
@@ -173,6 +328,10 @@ const CurrencyExchangePage = () => {
 }
 
 const styles = StyleSheet.create({
+    selectCurrencyBox: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
     addButton: {
         backgroundColor: '#2ecc71',
         borderRadius: 8,
@@ -235,6 +394,11 @@ const styles = StyleSheet.create({
         height: 50,
         width: '100%',
         marginBottom: 30,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 5,
     },
     info: {
         marginBottom: 15,
