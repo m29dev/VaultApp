@@ -48,6 +48,8 @@ const CurrencyExchangePage = () => {
         setCurrentAsk(ask)
         setCurrentBid(bid)
 
+        if (!amount) return setAmountReceive(0)
+
         if (plnExchange) {
             const newAmount = (amount / ask).toFixed(2)
             setAmountReceive(newAmount)
@@ -172,12 +174,12 @@ const CurrencyExchangePage = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Wymiana Walut</Text>
+                <Text style={styles.headerTitle}>Currency Exchange</Text>
             </View>
 
             {/* Current Currency Selector */}
             <View style={styles.addMoneySection}>
-                <Text style={styles.sectionTitle}>Wymieniam</Text>
+                <Text style={styles.sectionTitle}>Exchange</Text>
 
                 {plnExchange && (
                     <View style={styles.selectCurrencyBox}>
@@ -241,12 +243,12 @@ const CurrencyExchangePage = () => {
                             setPlnExchange(!plnExchange)
                         }}
                     >
-                        <Text style={styles.addButtonText}>odwroc</Text>
+                        <Text style={styles.addButtonText}>switch</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* New Currency Selector */}
-                <Text style={styles.sectionTitle}>Otrzymam</Text>
+                <Text style={styles.sectionTitle}>Receive</Text>
 
                 {plnExchange && (
                     <View style={styles.selectCurrencyBox}>
@@ -307,16 +309,16 @@ const CurrencyExchangePage = () => {
                 )}
 
                 {/* buys */}
-                {plnExchange && <Text>Aktualny kurs: {currentAsk}</Text>}
+                {plnExchange && <Text>Current currency: {currentAsk}</Text>}
 
                 {/* sells */}
-                {!plnExchange && <Text>Aktualny kurs: {currentBid}</Text>}
+                {!plnExchange && <Text>Current currency: {currentBid}</Text>}
 
                 <TouchableOpacity
                     style={styles.addButton}
                     onPress={handleExchange}
                 >
-                    <Text style={styles.addButtonText}>Wymien</Text>
+                    <Text style={styles.addButtonText}>exchange</Text>
                 </TouchableOpacity>
 
                 {/* Result Message */}

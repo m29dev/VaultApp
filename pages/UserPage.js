@@ -26,7 +26,7 @@ const UserPage = ({ navigation }) => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Moje Konto</Text>
+                <Text style={styles.headerTitle}>User</Text>
             </View>
 
             <Text style={styles.title}>{user}</Text>

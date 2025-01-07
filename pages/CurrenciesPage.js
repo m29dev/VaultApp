@@ -59,13 +59,13 @@ const CurrenciesPage = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Kursy</Text>
+                <Text style={styles.headerTitle}>Currencies</Text>
             </View>
-            <Text style={styles.title}>Wybierz datę:</Text>
+            <Text style={styles.title}>Choose currencies date:</Text>
 
             {/* Wybór dnia */}
             <View style={styles.pickerContainer}>
-                <Text>Dzień:</Text>
+                <Text>Day:</Text>
                 <Picker
                     selectedValue={day}
                     style={styles.picker}
@@ -79,7 +79,7 @@ const CurrenciesPage = () => {
 
             {/* Wybór miesiąca */}
             <View style={styles.pickerContainer}>
-                <Text>Miesiąc:</Text>
+                <Text>Month:</Text>
                 <Picker
                     selectedValue={month}
                     style={styles.picker}
@@ -93,7 +93,7 @@ const CurrenciesPage = () => {
 
             {/* Wybór roku */}
             <View style={styles.pickerContainer}>
-                <Text>Rok:</Text>
+                <Text>Year:</Text>
                 <Picker
                     selectedValue={year}
                     style={styles.picker}
@@ -109,13 +109,15 @@ const CurrenciesPage = () => {
                 style={styles.addButton}
                 onPress={handleSearchByDate}
             >
-                <Text style={styles.addButtonText}>Szukaj po dacie</Text>
+                <Text style={styles.addButtonText}>Search</Text>
             </TouchableOpacity>
 
             <Text>{message}</Text>
 
             <View style={styles.currenciesSection}>
-                <Text style={styles.sectionTitle}>Kursy z dnia {dateInfo}</Text>
+                <Text style={styles.sectionTitle}>
+                    Currencies from {dateInfo}
+                </Text>
                 {currencies.length > 0 ? (
                     <ScrollView style={styles.scrollView}>
                         {currencies.map((item, index) => (

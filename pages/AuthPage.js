@@ -22,7 +22,7 @@ const AuthPage = () => {
             // const data = await response.json()
             console.log(data)
             await saveSession(data)
-            setMessage(`Login successful: ${data}`)
+            setMessage(`Login successful`)
             navigation.navigate('Home')
         } catch (error) {
             console.error('Error:', error)
@@ -37,7 +37,7 @@ const AuthPage = () => {
 
             console.log(data)
             await saveSession(data)
-            setMessage(`Register successful: ${data}`)
+            setMessage(`Register successful`)
             navigation.navigate('Home')
         } catch (error) {
             console.error('Error:', error)
