@@ -1,6 +1,6 @@
 # Vault - Currency Exchange App
 
-**Vault** is a mobile application built with **React Native** that allows users to exchange currencies conveniently and securely. The app is designed to provide real-time exchange rates, easy-to-use currency conversion features, and a streamlined user experience for managing currency transactions—similar to online exchange platforms like Kantor.
+**Vault** is a mobile application built with **React Native** that allows users to exchange currencies conveniently and securely. The app is designed to provide real-time exchange rates, easy-to-use currency conversion features, and a streamlined user experience for managing currency transactions.
 
 ---
 
